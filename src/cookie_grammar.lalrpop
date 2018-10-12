@@ -1,0 +1,95 @@
+use ::{CookieLexerError, CookieToken, LinkedList};
+use ::cookie::terminals::Cookie;
+use ::cookie::nonterminals::NonTerminalSpan;
+
+grammar;
+
+pub(crate) Cookies: LinkedList<Cookie> = {
+    <CookieString> => <>,
+    OWS <CookieString> => <>,
+    <CookieString> OWS => <>,
+    OWS <CookieString> OWS => <>
+}
+
+CookieString: LinkedList<Cookie> = {
+    <c: Cookie> => LinkedList::new(c),
+    <cv: CookieString> ";" " " <c: Cookie> => cv.insert(c)
+}
+
+Cookie: Cookie = {
+    <t: Token> "=" <c: PossiblyQuotedCookieOctets> => Cookie {
+        key: t,
+        value: c
+    },
+    <l: @L> "=" <c: PossiblyQuotedCookieOctets> => Cookie {
+        key: NonTerminalSpan::new(l, l),
+        value: c
+    },
+    <t: Token> "=" <r: @R> => Cookie {
+        key: t,
+        value: NonTerminalSpan::new(r, r)
+    },
+    <l: @L> "=" <r: @R> => Cookie {
+        key: NonTerminalSpan::new(l, l),
+        value: NonTerminalSpan::new(r, r)
+    },
+    <l: @L> <c: PossiblyQuotedNoEqualsCookieOctets> => Cookie {
+        key: NonTerminalSpan::new(l, l),
+        value: c
+    },
+};
+
+PossiblyQuotedCookieOctets: NonTerminalSpan = {
+    <CookieOctets> => <>,
+    "\"" <c: CookieOctets> "\"" => <>
+}
+
+PossiblyQuotedNoEqualsCookieOctets: NonTerminalSpan = {
+    <NoEqualsCookieOctets> => <>,
+    "\"" <c: NoEqualsCookieOctets> "\"" => <>
+}
+
+Token: NonTerminalSpan = {
+    <l: @L> "token_or_cookie_octets" <r: @R> => NonTerminalSpan::new(l, r)
+}
+
+NoEqualsCookieOctets: NonTerminalSpan = {
+    <l: @L> "cookie_octets" <r: @R> => NonTerminalSpan::new(l, r),
+    <l: @L> "token_or_cookie_octets" <r: @R> => NonTerminalSpan::new(l, r),
+    <l: @L> NoEqualsCookieOctets "cookie_octets" <r: @R> => NonTerminalSpan::new(l, r),
+    <l: @L> NoEqualsCookieOctets "token_or_cookie_octets" <r: @R> => NonTerminalSpan::new(l, r)
+}
+
+CookieOctets: NonTerminalSpan = {
+    <l: @L> "cookie_octets" <r: @R> => NonTerminalSpan::new(l, r),
+    <l: @L> "token_or_cookie_octets" <r: @R> => NonTerminalSpan::new(l, r),
+    <l: @L> "=" <r: @R> => NonTerminalSpan::new(l, r),
+    <l: @L> CookieOctets "cookie_octets" <r: @R> => NonTerminalSpan::new(l, r),
+    <l: @L> CookieOctets "token_or_cookie_octets" <r: @R> => NonTerminalSpan::new(l, r),
+    <l: @L> CookieOctets "=" <r: @R> => NonTerminalSpan::new(l, r)
+}
+
+OWS: () = {
+    OWSPart => (),
+    OWSPart OWS => ()
+}
+
+OWSPart: () = {
+    " " => (),
+    "ws" => (),
+}
+
+extern {
+    type Location = usize;
+    type Error = CookieLexerError;
+
+    enum CookieToken {
+        "cookie_octets" => CookieToken::CookieOctets,
+        "token_or_cookie_octets" => CookieToken::TokenOrCookieOctets,
+        "=" => CookieToken::Equals,
+        ";" => CookieToken::Semicolon,
+        " " => CookieToken::Space,
+        "ws" => CookieToken::Whitespace,
+        "\"" => CookieToken::DoubleQuote
+    }
+}

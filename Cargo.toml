@@ -1,0 +1,16 @@
+[package]
+name = "basic-cookies"
+version = "0.1.0"
+authors = ["Tamas Czinege <tomi.czinege@gmail.com>"]
+description = "Low-level RFC 6265 combatible cookie handling library for Rust."
+readme = "README.md"
+keywords = ["cookie", "cookies", "rfc6265"]
+categories = ["web-programming", "network-programming", "parser-implementations"]
+license = "MIT"
+
+[dependencies]
+"lalrpop-util" = "0.16"
+"regex" = "1.0"
+
+[build-dependencies]
+"lalrpop" = "0.16"
