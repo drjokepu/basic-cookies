@@ -1,3 +1,7 @@
+use std::fmt::{Display, Error as FormatterError, Formatter};
+
+const COOKIE_LEXER_ERROR_DESCRIPTION: &'static str = "Cookie Lexer Error";
+
 #[derive(Debug)]
 pub struct CookieLexerError;
 
@@ -11,6 +15,26 @@ impl PartialEq<CookieLexerError> for CookieLexerError {
     }
 }
 
+impl Display for CookieLexerError {
+    fn fmt(&self, f: &mut Formatter) -> Result<(), FormatterError> {
+        f.write_str(COOKIE_LEXER_ERROR_DESCRIPTION)
+    }
+}
+
+impl std::error::Error for CookieLexerError {
+    fn description(&self) -> &str {
+        COOKIE_LEXER_ERROR_DESCRIPTION
+    }
+
+    fn cause(&self) -> Option<&std::error::Error> {
+        None
+    }
+
+    fn source(&self) -> Option<&(std::error::Error + 'static)> {
+        None
+    }
+}
+
 #[derive(Debug, PartialEq)]
 pub enum CookieToken {
     CookieOctets,
@@ -20,6 +44,26 @@ pub enum CookieToken {
     Whitespace,
     Space,
     DoubleQuote,
+}
+
+impl CookieToken {
+    fn as_str(&self) -> &'static str {
+        match self {
+            CookieToken::CookieOctets => "CookieToken::CookieOctets",
+            CookieToken::TokenOrCookieOctets => "CookieToken::TokenOrCookieOctets",
+            CookieToken::Equals => "CookieToken::Equals",
+            CookieToken::Semicolon => "CookieToken::Semicolon",
+            CookieToken::Whitespace => "CookieToken::Whitespace",
+            CookieToken::Space => "CookieToken::Space",
+            CookieToken::DoubleQuote => "CookieToken::DoubleQuote",
+        }
+    }
+}
+
+impl Display for CookieToken {
+    fn fmt(&self, f: &mut Formatter) -> Result<(), FormatterError> {
+        f.write_str(self.as_str())
+    }
 }
 
 macro_rules! try_str_match {
@@ -189,6 +233,15 @@ impl<'input> CookieLexer<'input> {
             | '\x7d' => CharTokenClass::CookieOctets, // excludes = (x3d)
             _ => CharTokenClass::None,
         }
+    }
+}
+
+impl<'input> Display for CookieLexer<'input> {
+    fn fmt(&self, f: &mut Formatter) -> Result<(), FormatterError> {
+        f.write_fmt(format_args!(
+            "Cookie Lexer, cursor at position {}.",
+            self.cursor
+        ))
     }
 }
 

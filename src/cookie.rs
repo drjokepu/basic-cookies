@@ -1,4 +1,9 @@
 use super::{lalrpop_util, CookieLexer, CookieLexerError, CookieToken};
+use std::fmt::{Display, Error as FormatterError, Formatter};
+
+const BASIC_COOKIE_ERROR_DESCRIPTION: &'static str = "Cookie Parsing Error";
+const INTERNAL_ERROR_DESCRIPTION: &'static str = "Internal Error";
+const PARSE_ERROR_DESCRIPTION: &'static str = "Parse Error";
 
 #[allow(dead_code)]
 lalrpop_mod!(cookie_grammar);
@@ -71,12 +76,60 @@ pub enum Error {
     ParseError(ParseError),
 }
 
+impl Display for Error {
+    fn fmt(&self, f: &mut Formatter) -> Result<(), FormatterError> {
+        f.write_str(BASIC_COOKIE_ERROR_DESCRIPTION)?;
+        f.write_str(": ")?;
+        match self {
+            Error::InternalError(err) => err.fmt(f),
+            Error::ParseError(err) => err.fmt(f),
+        }
+    }
+}
+
+impl std::error::Error for Error {
+    fn description(&self) -> &str {
+        BASIC_COOKIE_ERROR_DESCRIPTION
+    }
+
+    fn cause(&self) -> Option<&std::error::Error> {
+        self.source()
+    }
+
+    fn source(&self) -> Option<&(std::error::Error + 'static)> {
+        match self {
+            Error::InternalError(err) => Some(err),
+            Error::ParseError(err) => Some(err),
+        }
+    }
+}
+
 #[derive(Debug)]
 pub struct InternalError(InternalErrorKind);
 
 impl InternalError {
     pub(crate) fn to_error(self) -> Error {
         Error::InternalError(self)
+    }
+}
+
+impl Display for InternalError {
+    fn fmt(&self, f: &mut Formatter) -> Result<(), FormatterError> {
+        f.write_str(INTERNAL_ERROR_DESCRIPTION)
+    }
+}
+
+impl std::error::Error for InternalError {
+    fn description(&self) -> &str {
+        INTERNAL_ERROR_DESCRIPTION
+    }
+
+    fn cause(&self) -> Option<&std::error::Error> {
+        None
+    }
+
+    fn source(&self) -> Option<&(std::error::Error + 'static)> {
+        None
     }
 }
 
@@ -88,15 +141,39 @@ enum InternalErrorKind {
 type LalrpopError = lalrpop_util::ParseError<usize, CookieToken, CookieLexerError>;
 
 #[derive(Debug)]
-pub struct ParseError(LalrpopError);
+pub struct ParseError {
+    lalrpop_error: LalrpopError,
+}
 
 impl ParseError {
     pub(crate) fn from_lalrpop_parse_error_to_error(src: LalrpopError) -> Error {
-        ParseError(src).to_error()
+        ParseError { lalrpop_error: src }.to_error()
     }
 
     fn to_error(self) -> Error {
         Error::ParseError(self)
+    }
+}
+
+impl Display for ParseError {
+    fn fmt(&self, f: &mut Formatter) -> Result<(), FormatterError> {
+        f.write_str(PARSE_ERROR_DESCRIPTION)?;
+        f.write_str(": ")?;
+        self.lalrpop_error.fmt(f)
+    }
+}
+
+impl std::error::Error for ParseError {
+    fn description(&self) -> &str {
+        PARSE_ERROR_DESCRIPTION
+    }
+
+    fn cause(&self) -> Option<&std::error::Error> {
+        Some(&self.lalrpop_error)
+    }
+
+    fn source(&self) -> Option<&(std::error::Error + 'static)> {
+        Some(&self.lalrpop_error)
     }
 }
 
