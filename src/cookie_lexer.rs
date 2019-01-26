@@ -35,7 +35,7 @@ impl std::error::Error for CookieLexerError {
     }
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub enum CookieToken {
     CookieOctets,
     TokenOrCookieOctets,
@@ -112,7 +112,8 @@ macro_rules! try_nonrepeating_char_match {
             && ($data.len() == $cursor + 1 || {
                 let (_, next_char) = $data[$cursor + 1];
                 next_char != $chr
-            }) {
+            })
+        {
             let token_idx = $cursor;
             let token_end = token_idx + char_val.len_utf8();
             $cursor = token_end;
