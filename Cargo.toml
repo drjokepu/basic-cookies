@@ -9,6 +9,7 @@ readme = "README.md"
 keywords = ["cookie", "cookies", "rfc6265"]
 categories = ["web-programming", "network-programming", "parser-implementations"]
 license = "MIT"
+edition = "2018"
 
 [badges]
 travis-ci = { repository = "drjokepu/basic-cookies", branch = "master" }

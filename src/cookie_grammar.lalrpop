@@ -1,6 +1,7 @@
-use ::{CookieLexerError, CookieToken, LinkedList};
-use ::cookie::terminals::Cookie;
-use ::cookie::nonterminals::NonTerminalSpan;
+use crate::{CookieLexerError, CookieToken};
+use crate::cookie::terminals::Cookie;
+use crate::cookie::nonterminals::NonTerminalSpan;
+use crate::linked_list::LinkedList;
 
 grammar;
 
