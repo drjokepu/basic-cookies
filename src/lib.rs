@@ -7,4 +7,3 @@ mod linked_list;
 
 pub use cookie::{Cookie, Error};
 pub(crate) use cookie_lexer::{CookieLexer, CookieLexerError, CookieToken};
-pub(crate) use linked_list::LinkedList;

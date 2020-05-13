@@ -9,13 +9,14 @@ readme = "README.md"
 keywords = ["cookie", "cookies", "rfc6265"]
 categories = ["web-programming", "network-programming", "parser-implementations"]
 license = "MIT"
+edition = "2018"
 
 [badges]
 travis-ci = { repository = "drjokepu/basic-cookies", branch = "master" }
 
 [dependencies]
-"lalrpop-util" = "0.16"
-"regex" = "1.1"
+"lalrpop-util" = "0.19"
+"regex" = "1.3"
 
 [build-dependencies]
-"lalrpop" = "0.16"
+"lalrpop" = "0.19"

@@ -26,11 +26,11 @@ impl std::error::Error for CookieLexerError {
         COOKIE_LEXER_ERROR_DESCRIPTION
     }
 
-    fn cause(&self) -> Option<&std::error::Error> {
+    fn cause(&self) -> Option<&dyn std::error::Error> {
         None
     }
 
-    fn source(&self) -> Option<&(std::error::Error + 'static)> {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
         None
     }
 }
@@ -212,14 +212,14 @@ impl<'input> CookieLexer<'input> {
     fn char_token_class(c: char) -> CharTokenClass {
         match c {
             '\x21'
-            | '\x23'...'\x27'
+            | '\x23'..='\x27'
             | '\x2a'
             | '\x2b'
             | '\x2d'
             | '\x2e'
-            | '\x30'...'\x39'
-            | '\x41'...'\x5a'
-            | '\x5e'...'\x7a'
+            | '\x30'..='\x39'
+            | '\x41'..='\x5a'
+            | '\x5e'..='\x7a'
             | '\x7c'
             | '\x7e' => CharTokenClass::TokenOrCookieOctets,
             '\x28'
@@ -227,7 +227,7 @@ impl<'input> CookieLexer<'input> {
             | '\x2f'
             | '\x3a'
             | '\x3c'
-            | '\x3e'...'\x40'
+            | '\x3e'..='\x40'
             | '\x5b'
             | '\x5d'
             | '\x7b'
