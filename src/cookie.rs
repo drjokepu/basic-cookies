@@ -92,11 +92,11 @@ impl std::error::Error for Error {
         BASIC_COOKIE_ERROR_DESCRIPTION
     }
 
-    fn cause(&self) -> Option<&std::error::Error> {
+    fn cause(&self) -> Option<&dyn std::error::Error> {
         self.source()
     }
 
-    fn source(&self) -> Option<&(std::error::Error + 'static)> {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
         match self {
             Error::InternalError(err) => Some(err),
             Error::ParseError(err) => Some(err),
@@ -124,11 +124,11 @@ impl std::error::Error for InternalError {
         INTERNAL_ERROR_DESCRIPTION
     }
 
-    fn cause(&self) -> Option<&std::error::Error> {
+    fn cause(&self) -> Option<&dyn std::error::Error> {
         None
     }
 
-    fn source(&self) -> Option<&(std::error::Error + 'static)> {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
         None
     }
 }
@@ -168,11 +168,11 @@ impl std::error::Error for ParseError {
         PARSE_ERROR_DESCRIPTION
     }
 
-    fn cause(&self) -> Option<&std::error::Error> {
+    fn cause(&self) -> Option<&dyn std::error::Error> {
         Some(&self.lalrpop_error)
     }
 
-    fn source(&self) -> Option<&(std::error::Error + 'static)> {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
         Some(&self.lalrpop_error)
     }
 }
