@@ -14,7 +14,8 @@ pub(crate) Cookies: LinkedList<Cookie> = {
 
 CookieString: LinkedList<Cookie> = {
     <c: Cookie> => LinkedList::new(c),
-    <cv: CookieString> ";" " " <c: Cookie> => cv.insert(c)
+    <cv: CookieString> ";" " " <c: Cookie> => cv.insert(c),
+    <cv: CookieString> ";" <c: Cookie> => cv.insert(c)
 }
 
 Cookie: Cookie = {

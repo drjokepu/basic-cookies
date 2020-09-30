@@ -500,4 +500,23 @@ mod tests {
         assert_eq!("third_val", parsed_cookie_2.name);
         assert_eq!("v4lue", parsed_cookie_2.value);
     }
+
+    #[test]
+    fn three_cookies_no_spacing() {
+        const COOKIE_STR: &'static str = "test1=0x1234;test2=test2;third_val=v4lue";
+        let parsed_cookies = Cookie::parse(COOKIE_STR).unwrap();
+        assert_eq!(3, parsed_cookies.len());
+
+        let parsed_cookie_0 = &parsed_cookies[0];
+        assert_eq!("test1", parsed_cookie_0.name);
+        assert_eq!("0x1234", parsed_cookie_0.value);
+
+        let parsed_cookie_1 = &parsed_cookies[1];
+        assert_eq!("test2", parsed_cookie_1.name);
+        assert_eq!("test2", parsed_cookie_1.value);
+
+        let parsed_cookie_2 = &parsed_cookies[2];
+        assert_eq!("third_val", parsed_cookie_2.name);
+        assert_eq!("v4lue", parsed_cookie_2.value);
+    }
 }
