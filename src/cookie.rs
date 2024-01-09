@@ -5,7 +5,6 @@ const BASIC_COOKIE_ERROR_DESCRIPTION: &'static str = "Cookie Parsing Error";
 const INTERNAL_ERROR_DESCRIPTION: &'static str = "Internal Error";
 const PARSE_ERROR_DESCRIPTION: &'static str = "Parse Error";
 
-#[allow(dead_code)]
 lalrpop_mod!(cookie_grammar);
 
 #[derive(Debug)]
