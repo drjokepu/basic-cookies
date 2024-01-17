@@ -11,9 +11,6 @@ categories = ["web-programming", "network-programming", "parser-implementations"
 license = "MIT"
 edition = "2021"
 
-[badges]
-travis-ci = { repository = "drjokepu/basic-cookies", branch = "master" }
-
 [dependencies]
 "lalrpop-util" = "0.20.0"
 "regex" = "1.3"
